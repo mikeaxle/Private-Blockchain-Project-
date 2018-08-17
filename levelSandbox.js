@@ -19,7 +19,8 @@ var getLevelDBData = function(key) {
 
 // get all levelDB entries
 var getLevelDataCount = function() {
-  return Promise((resolve, reject) => {
+  // return as promise
+  return new Promise((resolve, reject) => {
     // variable to store block height
     let blockHeight = 0;
 
@@ -30,15 +31,21 @@ var getLevelDataCount = function() {
         blockHeight++;
       })
       .on("error", err => {
-        // print error
+        // create error string
         let reason = `Unable to read data stream ${err}`;
+
+        // print error
         console.log(reason);
+
+        // reject
         reject(reason);
       })
-      .on("close", () => {
-        // return  value
+      .on("end", () => {
+        // print value
         console.log(blockHeight);
-        resolve(blockHeight - 1);
+
+        // resolve value
+        resolve(blockHeight);
       });
   });
 };
@@ -77,7 +84,8 @@ var addDataToLevelDB = function(value) {
 
 module.exports = {
   getLevelDataCount,
-  getLevelDBData
+  getLevelDBData,
+  addDataToLevelDB
 };
 
 /* ===== Testing ==============================================================|

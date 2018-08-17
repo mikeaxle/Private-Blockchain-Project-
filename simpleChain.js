@@ -1,10 +1,12 @@
-const lv = require('./levelSandbox')
+const lv = require("./levelSandbox");
 
 /* ===== SHA256 with Crypto-js ===============================
 |  Learn more: Crypto-js: https://github.com/brix/crypto-js  |
 |  =========================================================*/
 
 const SHA256 = require("crypto-js/sha256");
+
+var totalBlockHeight;
 
 /* ===== Block Class ==============================
 |  Class with a constructor for block 			   |
@@ -23,28 +25,44 @@ class Block {
 /* ===== Blockchain Class ==========================
 |  Class with a constructor for new blockchain 		|
 |  ================================================*/
-
 class Blockchain {
   constructor() {
-    this.chain = this.getBlockHeight()
+    // call function to get total block height
+    this.getBlockHeight();
 
-    // create genesis block
-    if (this.chain.length === 0) {
-      this.addBlock(new Block("First block in the chain - Genesis block"));
-    }
+    // wait 3 seconds
+    setTimeout(() => {
+      // create genesis block
+      if (totalBlockHeight == 0) {
+        console.log("no blocks");
+        this.addBlock(new Block("First block in the chain - Genesis block"));
+      }
+    }, 3000);
+  }
+
+  // Get block height
+  getBlockHeight() {
+    // consume promise
+    lv.getLevelDataCount()
+      .then(res => {
+        totalBlockHeight = res;
+      })
+      .catch(err => {
+        console.log(err);
+      });
   }
 
   // Add new block
   addBlock(newBlock) {
     // Block height
-    newBlock.height = this.chain.length;
+    newBlock.height = totalBlockHeight;
 
     // UTC timestamp
     newBlock.time = Date.now();
 
     // previous block hash
-    if (this.chain.length > 0) {
-      newBlock.previousBlockHash = this.chain[this.chain.length - 1].hash;
+    if (this.totalBlockHeight > 0) {
+      newBlock.previousBlockHash = this.chain[totalBlockHeight - 1].hash;
     }
 
     // Block hash with SHA256 using newBlock and converting to a string
@@ -52,13 +70,6 @@ class Blockchain {
 
     // Adding block object to chain
     lv.addDataToLevelDB(newBlock);
-  }
-
-  // Get block height
-  getBlockHeight() {
-    return lv.getLevelDataCount().then((res) => {
-      return res;
-    })
   }
 
   // get block
@@ -96,7 +107,7 @@ class Blockchain {
   // Validate blockchain
   validateChain() {
     let errorLog = [];
-    for (var i = 0; i < this.chain.length - 1; i++) {
+    for (var i = 0; i < this.totalBlockHeight - 1; i++) {
       // validate block
       if (!this.validateBlock(i)) errorLog.push(i);
       // compare blocks hash link

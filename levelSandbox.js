@@ -8,9 +8,11 @@ const db = level(chainDB, { valueEncoding: "json" });
 
 // Get data from levelDB with key
 var getLevelDBData = function(key) {
-  db.get(key)
+  return db
+    .get(key)
     .then(res => {
-      console.log(`Value = ${res}`);
+      // console.log(`Value = ${JSON.stringify(res)}`);
+      return res;
     })
     .catch(err => {
       console.log(`Not found! ${err}`);
@@ -70,15 +72,9 @@ var addDataToLevelDB = function(value) {
     })
     .on("close", function() {
       console.log("Block #" + i);
-
-      // check if i is less than 10
-      if (i < 10) {
-        // pre-pend 0 and add to level
-        addLevelDBData("0" + i, value);
-      } else {
         // add to level as is
         addLevelDBData(i, value);
-      }
+
     });
 };
 

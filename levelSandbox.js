@@ -24,12 +24,13 @@ var getLevelDataCount = function() {
   // return as promise
   return new Promise((resolve, reject) => {
     // variable to store block height
-    let blockHeight = 0;
+    let blockHeight = -1;
 
     // get all items
     db.createReadStream()
       .on("data", res => {
         // increment block height
+        console.log(res)
         blockHeight++;
       })
       .on("error", err => {
@@ -44,7 +45,7 @@ var getLevelDataCount = function() {
       })
       .on("end", () => {
         // print value
-        console.log(blockHeight);
+        console.log(`current block height is: ${blockHeight}`);
 
         // resolve value
         resolve(blockHeight);
@@ -81,7 +82,8 @@ var addDataToLevelDB = function(value) {
 module.exports = {
   getLevelDataCount,
   getLevelDBData,
-  addDataToLevelDB
+  addDataToLevelDB,
+  addLevelDBData
 };
 
 /* ===== Testing ==============================================================|

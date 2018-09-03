@@ -80,7 +80,8 @@ server.route([
 
         // previous block hash
         if (block.height > 0) {
-          block.previousBlockHash = await lv.getLevelDBData(block.height - 1)
+          block.previousBlockHash = await lv
+            .getLevelDBData(block.height - 1)
             .then(res => {
               return res.hash;
             })

@@ -97,14 +97,6 @@ class Blockchain {
     return lv.getLevelDBData(blockHeight);
   }
 
-  // test
-  // editBlock(blockHeight) {
-  //   lv.getLevelDBData(blockHeight).then(block => {
-  //     block.body = "error";
-  //     lv.addDataToLevelDB(4, block);
-  //   });
-  // }
-
   // validate block function
   async validateBlock(blockHeight) {
     try {

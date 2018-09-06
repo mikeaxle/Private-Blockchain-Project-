@@ -2,7 +2,7 @@
 - created with Node.js and Hapi.js REST framework
 
 ## Instructions to run API
-- Run the api.js file with node (node {location_of_project}/api.js)
+- Run the api.js file with node using node {location_of_project}/api.js
 
 
 ### get block 

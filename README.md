@@ -8,7 +8,7 @@ created with Node.js and Hapi.js REST framework
 
 
 ## get block 
-    - located at endpoint: __localhost:8000/block/{block_height}__
+    - located at endpoint: `localhost:8000/block/{block_height}`
     - use **GET** http method
     - where *{block_height}* is the block height of the block to retrieve
     - returns block in JSON format

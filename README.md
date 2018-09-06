@@ -8,13 +8,13 @@ created with Node.js and Hapi.js REST framework
 
 
 ## get block 
-    - located at endpoint: `localhost:8000/block/{block_height}`
-    - use **GET** http method
-    - where *{block_height}* is the block height of the block to retrieve
+    - located at endpoint: localhost:8000/block/{block_height}
+    - use GET http method
+    - where {block_height} is the block height of the block to retrieve
     - returns block in JSON format
 
 ## add block
-    - located at endpoint: **localhost:8000/block**
-    - Use **POST** http method
+    - located at endpoint: localhost:8000/block
+    - Use POST http method
     - required parameter is body, which contains the body text for the new block to be added to the chain
     - adds new block to the chain and returns the newly added block

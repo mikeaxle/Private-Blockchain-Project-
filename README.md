@@ -1,8 +1,8 @@
-#Private Blockchain REST API
+# Private Blockchain REST API
 
 created with Node.js and Hapi.js REST framework
 
-##Instructions to run API
+## Instructions to run API
 
 - Run the api.js file with node (node {location_of_project}/api.js)
 

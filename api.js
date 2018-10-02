@@ -59,7 +59,7 @@ server.route([{
       let block = {
         hash: "",
         height: 0,
-        body: "",
+        body: {},
         time: 0,
         previousBlockHash: ""
       };
@@ -67,6 +67,10 @@ server.route([{
       try {
         // assign payload to local variable
         block.body = request.payload.body;
+
+        // // encode block story to hex
+        let storyHex = new Buffer(block.body.star.story).toString('hex')
+        block.body.star.story = storyHex
 
         // get block height
         block.height = await lv

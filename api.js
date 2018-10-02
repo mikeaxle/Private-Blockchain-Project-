@@ -68,9 +68,12 @@ server.route([{
         // assign payload to local variable
         block.body = request.payload.body;
 
-        // // encode block story to hex
-        let storyHex = new Buffer(block.body.star.story).toString('hex')
-        block.body.star.story = storyHex
+        // check if star is being added to block chain chain
+        if (block.body.star != undefined && block.body.star !== null) {
+          // // encode block story to hex
+          let storyHex = new Buffer(block.body.star.story).toString('hex')
+          block.body.star.story = storyHex
+        }
 
         // get block height
         block.height = await lv

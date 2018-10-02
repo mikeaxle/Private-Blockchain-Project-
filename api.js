@@ -257,7 +257,7 @@ server.route([{
           }
         }
       }, {
-        // Get star by blockchain wallet address route
+        // Get star by block hash address route
         method: "GET",
         path: "/stars/hash/{hash}",
         handler: async (request, h) => {

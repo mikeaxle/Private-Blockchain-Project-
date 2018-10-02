@@ -165,7 +165,7 @@ server.route([{
         console.log(`A validation request matching the address: ${address} has been found!`)
 
         // get time elapsed since validation request was started
-        let timeElapsed = (Date.now() - block.requestTimestamp) / 1000
+        let timeElapsed = Math.round((Date.now() - block.requestTimestamp) / 1000)
 
         // check if time elapsed is less than 5 minutes
         if (timeElapsed <= 300) {

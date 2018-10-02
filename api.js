@@ -181,7 +181,7 @@ server.route([{
       if (block !== undefined && block !== null) {
         //delete all requests with matching address from memPool: user can only have one validation request at a time
         memPool = memPool.filter((block) => {
-          if(block.address !== address){
+          if (block.address !== address) {
             return block
           }
         })
@@ -226,7 +226,7 @@ server.route([{
   {
     // Get star by blockchain wallet address route
     method: "GET",
-    path: "/stars/{address}",
+    path: "/stars/address/{address}",
     handler: async (request, h) => {
       // get address from payload
       let address = request.params.address
@@ -252,6 +252,32 @@ server.route([{
       } else {
         // return message informing user that there are no blocks matching the address
         return `There are no blocks registered to the address: ${address}`
+      }
+    }
+  },
+  {
+    // Get star by blockchain wallet address route
+    method: "GET",
+    path: "/stars/hash/{hash}",
+    handler: async (request, h) => {
+      // get address from payload
+      let hash = request.params.hash
+
+      let block = await lv
+        .getBlockByHash(hash)
+        .then((res) => {
+          return res
+        })
+        .catch((err) => {
+          // display error
+          console.log(error);
+        })
+
+      // check if there is a result
+      if (block !== null) {
+        return block;
+      } else {
+        return `The a block with hash: '${hash}' does not exist`
       }
     }
   }

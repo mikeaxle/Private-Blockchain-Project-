@@ -21,17 +21,53 @@ var getLevelDBData = function (key) {
     });
 };
 
+// get block by hash
+var getBlockByHash = function (hash) {
+  // variable to store block
+  var _block = null
+
+  return new Promise((resolve, reject) => {
+    db.createReadStream({
+        keys: false,
+        values: true
+      })
+      .on("data", block => {
+        // check if hash matches 
+        if(block.hash === hash){
+          _block = block
+        }
+      })
+      .on("error", err => {
+        // create error string
+        let reason = `Unable to read data stream ${err}`;
+
+        // print error
+        console.log(reason);
+
+        // reject
+        reject(reason);
+      })
+      .on("end", () => {
+        // resolve block
+        resolve(_block)
+      })
+  })
+}
+
 // get blocks from levelDB with address
 var getBlocksByAddress = function (address) {
   // array to store blocks
   var blocks = []
 
   return new Promise((resolve, reject) => {
-    db.createReadStream({ keys: false, values: true })
+    db.createReadStream({
+        keys: false,
+        values: true
+      })
       .on("data", block => {
         // make sure body isn't string
         if (typeof block.body !== 'string' && block.body !== undefined) {
-          
+
           // check if block address === address
           if (block.body.address === address) {
             // convert hex to ascii staring
@@ -127,7 +163,8 @@ module.exports = {
   getLevelDBData,
   addDataToLevelDB,
   addLevelDBData,
-  getBlocksByAddress
+  getBlocksByAddress,
+  getBlockByHash
 };
 
 /* ===== Testing ==============================================================|

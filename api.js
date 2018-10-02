@@ -70,9 +70,18 @@ server.route([{
 
         // check if star is being added to block chain chain
         if (block.body.star != undefined && block.body.star !== null) {
-          // // encode block story to hex
-          let storyHex = new Buffer(block.body.star.story).toString('hex')
-          block.body.star.story = storyHex
+
+          // add story to buffer and convert to hex
+          let storyBuffer = new Buffer(block.body.star.story).toString('hex')
+
+          // if string is larger than 500 bytes, truncate to 500 bytes
+          if (storyBuffer.length >= 500) {
+            storyBuffer = storyBuffer.slice(0, 500)
+            console.log('story was truncated to 500 bytes')
+          }
+
+          //tore in block
+          block.body.star.story = storyBuffer
         }
 
         // get block height

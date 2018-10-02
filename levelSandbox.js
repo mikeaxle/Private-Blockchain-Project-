@@ -4,10 +4,12 @@
 
 const level = require("level");
 const chainDB = "./chaindata";
-const db = level(chainDB, { valueEncoding: "json" });
+const db = level(chainDB, {
+  valueEncoding: "json"
+});
 
-// Get data from levelDB with key
-var getLevelDBData = function(key) {
+// Get block from levelDB with height
+var getLevelDBData = function (key) {
   return db
     .get(key)
     .then(res => {
@@ -19,8 +21,48 @@ var getLevelDBData = function(key) {
     });
 };
 
+// get blocks from levelDB with address
+var getBlocksByAddress = function (address) {
+  // array to store blocks
+  var blocks = []
+
+  return new Promise((resolve, reject) => {
+    db.createReadStream({ keys: false, values: true })
+      .on("data", block => {
+        // make sure body isn't string
+        if (typeof block.body !== 'string' && block.body !== undefined) {
+          
+          // check if block address === address
+          if (block.body.address === address) {
+            // convert hex to ascii staring
+            let hexStory = new Buffer(block.body.star.story, 'hex')
+            block.body.star.story = hexStory.toString('ascii')
+
+            // add block to array
+            blocks.push(block)
+            console.log(block)
+          }
+        }
+      })
+      .on("error", err => {
+        // create error string
+        let reason = `Unable to read data stream ${err}`;
+
+        // print error
+        console.log(reason);
+
+        // reject
+        reject(reason);
+      })
+      .on("end", () => {
+        // resolve blocks array
+        resolve(blocks)
+      })
+  })
+}
+
 // get all levelDB entries
-var getLevelDataCount = function() {
+var getLevelDataCount = function () {
   // return as promise
   return new Promise((resolve, reject) => {
     // variable to store block height
@@ -54,36 +96,38 @@ var getLevelDataCount = function() {
 };
 
 // Add data to levelDB with key/value pair
-var addLevelDBData = function(key, value) {
+var addLevelDBData = function (key, value) {
   db.put(key, value).catch(err => {
     console.log(`Block ${key} submission failed. ${err}`);
   });
 };
 
 // Add data to levelDB with value
-var addDataToLevelDB = function(value) {
+var addDataToLevelDB = function (value) {
   let i = 0;
   db.createReadStream()
-    .on("data", function(data) {
+    .on("data", function (data) {
       // increase i to current block number
       i++;
     })
-    .on("error", function(err) {
+    .on("error", function (err) {
       return console.log("Unable to read data stream!", err);
     })
-    .on("close", function() {
+    .on("close", function () {
       console.log("Block #" + i);
-        // add to level as is
-        addLevelDBData(i, value);
+      // add to level as is
+      addLevelDBData(i, value);
 
     });
 };
+
 
 module.exports = {
   getLevelDataCount,
   getLevelDBData,
   addDataToLevelDB,
-  addLevelDBData
+  addLevelDBData,
+  getBlocksByAddress
 };
 
 /* ===== Testing ==============================================================|

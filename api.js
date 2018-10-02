@@ -71,8 +71,8 @@ server.route([{
         // check if star is being added to block chain chain
         if (block.body.star != undefined && block.body.star !== null) {
 
-          // add story to buffer and convert to hex
-          let storyBuffer = new Buffer(block.body.star.story).toString('hex')
+          // add story to buffer and convert ascii then to hex
+          let storyBuffer = new Buffer(block.body.star.story, 'ascii').toString('hex')
 
           // if string is larger than 500 bytes, truncate to 500 bytes
           if (storyBuffer.length >= 500) {
@@ -149,7 +149,7 @@ server.route([{
     }
   },
   {
-    // validate message signature
+    // validate message signature route
     method: "POST",
     path: "/message-signature/validate",
     handler: async (request, h) => {
@@ -176,8 +176,16 @@ server.route([{
         }
       })
 
+
       // check if returned object is null
       if (block !== undefined && block !== null) {
+        //delete all requests with matching address from memPool: user can only have one validation request at a time
+        memPool = memPool.filter((block) => {
+          if(block.address !== address){
+            return block
+          }
+        })
+
         console.log(`A validation request matching the address: ${address} has been found!`)
 
         // get time elapsed since validation request was started
@@ -197,9 +205,6 @@ server.route([{
           success = false
           status = `Validation window of 5 minutes has expired. Please make another validation request`
           console.log(status)
-
-          //delete request from memPool
-          memPool.pop()
         }
       } else {
         // set status and success
@@ -212,8 +217,42 @@ server.route([{
       response.registerStar = success
       response.status = status
 
+      console.log('mempool length' + memPool.length)
+
       // return response
       return response
+    }
+  },
+  {
+    // Get star by blockchain wallet address route
+    method: "GET",
+    path: "/stars/{address}",
+    handler: async (request, h) => {
+      // get address from payload
+      let address = request.params.address
+
+      // array to store blocks
+      let blocks = []
+
+      // get blocks from levelDB with matching address
+      blocks = await lv
+        .getBlocksByAddress(address)
+        .then(blocks => {
+          return blocks
+        })
+        .catch(error => {
+          // display error
+          console.log(error);
+        })
+
+      // check if there are any blocks
+      if (blocks.length > 0) {
+        // return blocks
+        return blocks
+      } else {
+        // return message informing user that there are no blocks matching the address
+        return `There are no blocks registered to the address: ${address}`
+      }
     }
   }
 ]);

@@ -33,7 +33,11 @@ var getBlockByHash = function (hash) {
       })
       .on("data", block => {
         // check if hash matches 
-        if(block.hash === hash){
+        if (block.hash === hash) {
+          // convert hex to ascii staring
+          let hexStory = new Buffer(block.body.star.story, 'hex')
+          block.body.star.storyDecoded = hexStory.toString('ascii')
+
           _block = block
         }
       })
@@ -72,7 +76,7 @@ var getBlocksByAddress = function (address) {
           if (block.body.address === address) {
             // convert hex to ascii staring
             let hexStory = new Buffer(block.body.star.story, 'hex')
-            block.body.star.story = hexStory.toString('ascii')
+            block.body.star.storyDecoded = hexStory.toString('ascii')
 
             // add block to array
             blocks.push(block)

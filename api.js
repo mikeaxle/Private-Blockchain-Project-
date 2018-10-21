@@ -1,5 +1,8 @@
 "use strict";
 
+// import simple chain helper class
+const simpleChain = require("./simpleChain")
+
 // import hapi js
 const Hapi = require("hapi");
 
@@ -14,6 +17,8 @@ const bitcoin = require("bitcoinjs-lib");
 // import bitcoinjs message
 const bitcoinMessage = require('bitcoinjs-message')
 
+// init block chain & add genesis block if necessary
+var blockchain = new simpleChain.Blockchain()
 
 // memPool global array
 var memPool = [];
@@ -66,25 +71,17 @@ server.route([{
   method: "POST",
   path: "/block",
   handler: async (request, h) => {
-    // create block object
-    let block = {
-      hash: "",
-      height: 0,
-      body: {},
-      time: 0,
-      previousBlockHash: ""
-    };
 
     try {
-      // assign payload to local variable
-      block.body = request.payload.body;
-
+      // create block object && assign payload to local variable
+      let block =  new simpleChain.Block(request.payload.body)
+  
       // check if address was entered
       if(block.body.address !== undefined && block.body.address !== null){
         // check if there is a valid request in the mempool 
-        let request = memPool.find(_block => {
-          if(_block.address === block.body.address){
-            return _block
+        let request = memPool.find(res => {
+          if(res.address === block.body.address){
+            return res
           }
         })
 
@@ -161,9 +158,9 @@ server.route([{
           lv.addDataToLevelDB(block);
 
           // delete request from mempool
-          memPool = memPool.filter(_block => {
-            if(_block.address !== block.body.address) {
-              return _block
+          memPool = memPool.filter(res => {
+            if(res.address !== block.body.address) {
+              return res
             }
           })
 
@@ -194,9 +191,9 @@ server.route([{
     let timestamp = Date.now()
 
     // look for block matching address in memPool
-    var block = memPool.find((block) => {
-      if (block.address === address) {
-        return block
+    var block = memPool.find((res) => {
+      if (res.address === address) {
+        return res
       }
     })
 
@@ -225,9 +222,9 @@ server.route([{
 
       } else {
         //delete all requests with matching address from memPool: user can only have one validation request at a time
-        memPool = memPool.filter((block) => {
-          if (block.address !== address) {
-            return block
+        memPool = memPool.filter((res) => {
+          if (res.address !== address) {
+            return res
           }
         })
 
@@ -276,9 +273,9 @@ server.route([{
     let block = null
 
     // look for block matching address in memPool
-    block = memPool.find((block) => {
-      if (block.address === address) {
-        return block
+    block = memPool.find((res) => {
+      if (res.address === address) {
+        return res
       }
     })
 
@@ -312,9 +309,9 @@ server.route([{
       }
 
         // write block back to mempool
-        memPool.forEach((item) => {
-          if (item.address == address) {
-            item = block
+        memPool.forEach((res) => {
+          if (res.address == address) {
+            res = block
           }
         })
 
@@ -332,9 +329,9 @@ server.route([{
         console.log(status)
 
         //delete all requests with matching address from memPool: user can only have one validation request at a time
-        memPool = memPool.filter((block) => {
-          if (block.address !== address) {
-            return block
+        memPool = memPool.filter((res) => {
+          if (res.address !== address) {
+            return res
           }
         })
       }

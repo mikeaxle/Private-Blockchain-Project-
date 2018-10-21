@@ -33,8 +33,16 @@ class Blockchain {
       .then(blockHeight => {
         // create genesis block
         if (blockHeight == -1) {
-          console.log("no blocks");
-          this.addBlock(new Block("First block in the chain - Genesis block"));
+          console.log('no blocks in chain');
+          this.addBlock(new Block({
+            address: '13wLKyZrhEMUnD88crU3AtL8tcBD6jUTfq',
+            star: {
+              dec: "-26° 29' 24.9",
+              ra: "16h 29m 1.0s",
+              story: 'First star in the BlockChain - Genesis block',
+            }
+
+          }));
         }
       })
       .catch(err => {
@@ -208,3 +216,8 @@ class Blockchain {
     }
   }
 }
+
+module.exports = {
+  Block,
+  Blockchain
+};

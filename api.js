@@ -74,7 +74,7 @@ server.route([{
 
     try {
       // create block object && assign payload to local variable
-      let block =  new simpleChain.Block(request.payload.body)
+      let block =  new simpleChain.Block(request.payload)
   
       // check if address was entered
       if(block.body.address !== undefined && block.body.address !== null){
